@@ -7,13 +7,17 @@
  * https://developer.spotify.com/web-api/authorization-guide/#authorization_code_flow
  */
 
+/**
+ * DEPENDENCIES
+ */
 var express = require('express'); // Express web server framework
 var request = require('request'); // "Request" library
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
+var musicManager = require ('./music-manager.js');
 
-var client_id = '03ffe0cac0a0401aa6673c3cf6d02ced'; // Your client id
-var client_secret = 'a57c43efb9644574a96d6623fb8bfbc2'; // Your client secret
+var client_id = 'c98c24a2857049e09f683e4985b58241'; // Your client id
+var client_secret = '92403d2a330d4555a9206a03ade9259e'; // Your client secret
 var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
 
 /**
@@ -114,6 +118,9 @@ app.get('/callback', function(req, res) {
       }
     });
   }
+
+  // Load the user's music
+  musicManager.loadMusic();
 });
 
 app.get('/refresh_token', function(req, res) {
