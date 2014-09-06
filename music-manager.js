@@ -28,6 +28,7 @@ function DatedTrack(playlist_track) {
 exports.createDatabase = function(access_token) {
 
     var user_id = null;
+    var error_return = 0;
 
     // get user_id
     // TODO (bargbb) strip out unneccessary field from request
@@ -38,6 +39,7 @@ exports.createDatabase = function(access_token) {
     };
 
     request.get(options, function(error, response, body) {
+	error_return = error;
         user_id = body.id;
     });
 
@@ -59,6 +61,7 @@ exports.createDatabase = function(access_token) {
 	}
 
 	request.get(options, function(error, response, body) {
+	    error_return = error;
 	    num_playlists_returned = body.items.length;
 	    
 	    for (var i = 0; i < num_playlists_returned; i++) {
@@ -88,6 +91,7 @@ exports.createDatabase = function(access_token) {
 	    }
 
 	    request.get(options, function(error, response, body) {
+		error_return = error;
 		num_tracks_returned = body.items.length;
 
 		for (var i = 0; i < num_tracks_returned; i++) {
@@ -111,6 +115,8 @@ exports.createDatabase = function(access_token) {
 	else
 	    return -1;
     });
+
+    return error_return;
 }
 
 /**
