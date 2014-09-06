@@ -2,25 +2,12 @@
  * music-manager.js
  * Contains functions to load and query the authorized user's Spotify library.
  */
-
 /**
  * DEPENDENCIES
  */
 var request = require('request');
 
-// array of every playlist track object
-var user_id = null;
 var library = [];
-
-// WORKFLOW for building database
-    // GET request for playlists
-
-    // am going to have to keep track of which playlist we are on
-
-    // for each playlist
-    // TODO (bbarg) use query string to limit to just track field (if necessary)
-    // GET request for all tracks (need to do this in 100 track chunks)
-       // return track
 
 /**
  * Class: Dated_Track 
@@ -29,34 +16,89 @@ var library = [];
  */
 function DatedTrack(playlist_track) {
     this.date = Date.parse(playlist_track.added_at);
-    this.track = playlist_track;
+    this.track = playlist_track.track;
 }
 
 /**
  * Reads a user's spotify library into a hash-table organized by playlist
  * add date.
+ * TODO (bargbb) error checking for all HTTP requests
  */
 function createDatabase(access_token) {
 
-    while (api_helper.hasMorePlaylistTracks()) {
-	// get user_id
+    var user_id = null;
+
+    // get user_id
+    // TODO (bargbb) strip out unneccessary field from request
+    var options = {
+        url: 'https://api.spotify.com/v1/me',
+        headers: { 'Authorization': 'Bearer ' + access_token },
+        json: true
+    };
+
+    request.get(options, function(error, response, body) {
+        user_id = body.id;
+    });
+
+    // grab all the playlists
+    var MAX_PLAYLISTS = 50; // max allowed by Spotify API
+    var playlists_offset = 0;
+    var num_playlists_returned = MAX_PLAYLISTS;
+    var playlists = [];
+
+    // TODO (bbarg) should we process all the playlists first, or do
+    // the tracks ASAP so that library can be accessed while it's being populated
+    while (num_playlists_returned === MAX_PLAYLISTS) {
 	var options = {
-            url: 'https://api.spotify.com/v1/me',
-            headers: { 'Authorization': 'Bearer ' + access_token },
-            json: true
-        };
+	    url: 'https://api.spotify.com/v1/' + user_id + '/playlists',
+	    headers: { 'Authorization': 'Bearer ' + access_token },
+	    json: true,
+	    limit: 50, 
+	    offset: playlists_offset
+	}
 
 	request.get(options, function(error, response, body) {
-            user_id = body.id;
-        });
+	    num_playlists_returned = body.items.length;
+	    
+	    for (var i = 0; i < num_playlists_returned; i++) {
+		playlists.push(body.items[i]);
+	    }
 
-	var library_hunk;
-
-	for (var i = 0; i < library_hunk.length; i++) {
-	    library.push(new DatedTrack(library_hunk[i]));
-	}
+	    playlist_offset += num_playlists_returned;
+	});
     }
 
+    // grab all the tracks and add them to the library
+    var MAX_TRACKS = 100;
+    var num_tracks_returned = MAX_TRACKS;
+    var tracks_offset = 0;
+
+    for (var i = 0; i < playlists.length; i++) {
+	
+	var playlist_id = playlist[i].id;
+
+	while (num_tracks_returned === MAX_TRACKS) {
+	    var options = {
+		url: 'https://api.spotify.com/v1/' + user_id + '/playlists/' + playlist_id + '/tracks',
+		headers: { 'Authorization': 'Bearer ' + access_token },
+		json: true,
+		limit: 50, 
+		offset: tracks_offset
+	    }
+
+	    request.get(options, function(error, response, body) {
+		num_tracks_returned = body.items.length;
+
+		for (var i = 0; i < num_tracks_returned; i++) {
+		    library.push(new DatedTrack(body.items[i]));
+		}
+
+		tracks_offset += num_tracks_returned;
+	    });
+	}
+    }
+    
+    // sort the library of playlist tracks by date
     library.sort( function(dtrack_1, dtrack_2) {
 	var date1 = Number(track1.date);
 	var date2 = Number(track2.date);
