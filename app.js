@@ -14,7 +14,6 @@ var express = require('express'); // Express web server framework
 var request = require('request'); // "Request" library
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
-var musicManager = require ('./music-manager.js');
 
 var client_id = 'c98c24a2857049e09f683e4985b58241'; // Your client id
 var client_secret = '92403d2a330d4555a9206a03ade9259e'; // Your client secret
@@ -94,10 +93,18 @@ app.get('/callback', function(req, res) {
             refresh_token = body.refresh_token;
 
         var options = {
-          url: 'https://api.spotify.com/v1/me',
+          url: 'https://api.spotify.com/v1/me/tracks',
           headers: { 'Authorization': 'Bearer ' + access_token },
           json: true
         };
+
+        // Create a music manager object by passing in access token.
+        var MusicManager = require('./music-manager.js');
+        var myManager = MusicManager(access_token);
+        var success = myManager.createDatabase();
+        if (success === 1) {
+            console.log("created Database");
+        }
 
         // use the access token to access the Spotify Web API
         request.get(options, function(error, response, body) {
@@ -119,8 +126,6 @@ app.get('/callback', function(req, res) {
     });
   }
 
-  // Load the user's music
-  musicManager.loadMusic();
 });
 
 app.get('/refresh_token', function(req, res) {
