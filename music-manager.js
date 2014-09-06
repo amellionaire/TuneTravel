@@ -1,11 +1,14 @@
 /**
   * Music Manager Object
   */
-module.exports = function(access_token) {
-    return {
-        // Constructor stuff.
-        createDatabase: function() {
-            return 1;
-        }
-    };
+
+exports.createDatabase = function(user_token) {
+    if (user_token) {
+        console.log(user_token);
+        return 1;
+    }
+    else {
+        return 0;
+    }
 }
+

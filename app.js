@@ -100,10 +100,9 @@ app.get('/callback', function(req, res) {
 
         // Create a music manager object by passing in access token.
         var MusicManager = require('./music-manager.js');
-        var myManager = MusicManager(access_token);
-        var success = myManager.createDatabase();
+        var success = MusicManager.createDatabase(access_token);
         if (success === 1) {
-            console.log("created Database");
+            console.log('created database');
         }
 
         // use the access token to access the Spotify Web API
@@ -127,6 +126,8 @@ app.get('/callback', function(req, res) {
   }
 
 });
+
+app.get('/refresh_music', function(
 
 app.get('/refresh_token', function(req, res) {
 
