@@ -43,6 +43,9 @@ exports.createDatabase = function(access_token) {
         user_id = body.id;
     });
 
+    if (error_return != 200)
+	return error_return;
+
     // grab all the playlists
     var MAX_PLAYLISTS = 50; // max allowed by Spotify API
     var playlists_offset = 0;
@@ -70,6 +73,9 @@ exports.createDatabase = function(access_token) {
 
 	    playlist_offset += num_playlists_returned;
 	});
+
+	if (error_return != 200)
+	    return error_return;
     }
 
     // grab all the tracks and add them to the library
@@ -100,6 +106,9 @@ exports.createDatabase = function(access_token) {
 
 		tracks_offset += num_tracks_returned;
 	    });
+
+	    if (error_return != 200)
+		return error_return;
 	}
     }
     
