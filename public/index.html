@@ -1,8 +1,9 @@
 <!doctype html>
 <html>
   <head>
-    <title>TUNE TRAVEL</title>
+    <title>Tune Travel</title>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="main.css">
     <style type="text/css">
       #login, #loggedin {
         display: none;
@@ -17,17 +18,24 @@
   </head>
 
   <body>
-    <div class="container">
+    <div id="container" class="container">
       <div id="login">
-        <h1>This is an example of the Authorization Code flow</h1>
-        <a href="/login" class="btn btn-primary">Log in with Spotify</a>
+        <a id="login_button" href="/login" class="btn btn-primary">Log in with Spotify</a>
       </div>
       <div id="loggedin">
-        <div id="user-profile">
+          <div id="menu_container">
+              <div id="content_container">
+                  <p id="prompt">How many years back would you like to travel?</p>
+                <input id="time" type="plain/text" placeholder="1">
+                <button id="submit">Go!</button>
+              </div>
+          </div>
+
+        <div id="user-profile" style="opacity:0;position:fixed;">
         </div>
-        <div id="oauth">
+        <div id="oauth" style="opacity:0;position:fixed;">
         </div>
-        <button class="btn btn-default" id="obtain-new-token">Obtain new token using the refresh token</button>
+        <button class="btn btn-default" id="obtain-new-token" style="opacity:0;position:fixed;">Obtain new token using the refresh token</button>
       </div>
     </div>
 
