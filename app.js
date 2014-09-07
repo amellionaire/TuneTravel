@@ -14,6 +14,7 @@ var express = require('express'); // Express web server framework
 var request = require('request'); // "Request" library
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
+var MusicManager = require('./music-manager.js');
 
 var client_id = 'c98c24a2857049e09f683e4985b58241'; // Your client id
 var client_secret = '92403d2a330d4555a9206a03ade9259e'; // Your client secret
@@ -55,17 +56,17 @@ app.get('/refresh_music', function(req, res){
     
     var enddate = new Date(today.getFullYear() - yearsago, today.getMonth() + 3, today.getDate(), 0, 0, 0, 0);
 
-    //call ben's function, get array of values
-
-    var tracks = [
+    var tracks = MusicManager.getTracksInDateRange(startdate, enddate);
+    // Array with objects of form {track: , date: } 
+    /*var tracks = [
         { date: today,
           track: "spotify:track:4bz7uB4edifWKJXSDxwHcs"
         }];
-
+*/
     var i=0;
     for(i=0; i<tracks.length; i++){
         var widget = document.createElement('iframe');
-        widget.setAttribute("src", "https://embed.spotify.com/?uri=" + tracks[i].track);
+        widget.setAttribute("src", "https://embed.spotify.com/?uri=" + tracks[i].track.uri);
         widget.setAttribute("width", "300");
         widget.setAttribute("height", "380");
         widget.setAttribute("frameborder", "0");
@@ -133,7 +134,6 @@ app.get('/callback', function(req, res) {
         };
 
         // Create a music manager object by passing in access token.
-        var MusicManager = require('./music-manager.js');
         var success = MusicManager.createDatabase(access_token);
         if (success === 1) {
             console.log('created database');
@@ -160,8 +160,6 @@ app.get('/callback', function(req, res) {
   }
 
 });
-
-app.get('/refresh_music', function(
 
 app.get('/refresh_token', function(req, res) {
 
