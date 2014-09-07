@@ -41,6 +41,40 @@ var app = express();
 app.use(express.static(__dirname + '/public'))
    .use(cookieParser());
 
+app.get('/refresh_music', function(req, res){
+    
+    var results = document.createElement('div');
+    var yearsago = parseInt(document.getElementById("form").value);
+    if(yearsago === NaN){
+        results.innerHTML = "Invalid input";
+        document.getElementById("content_container").appendChild(results);
+        return;
+    }
+    var today = new Date();
+    var startdate = new Date(today.getFullYear() - yearsago, today.getMonth(), today.getDate(), 0, 0, 0, 0);
+    
+    var enddate = new Date(today.getFullYear() - yearsago, today.getMonth() + 3, today.getDate(), 0, 0, 0, 0);
+
+    //call ben's function, get array of values
+
+    var tracks = [
+        { date: today,
+          track: "spotify:track:4bz7uB4edifWKJXSDxwHcs"
+        }];
+
+    var i=0;
+    for(i=0; i<tracks.length; i++){
+        var widget = document.createElement('iframe');
+        widget.setAttribute("src", "https://embed.spotify.com/?uri=" + tracks[i].track);
+        widget.setAttribute("width", "300");
+        widget.setAttribute("height", "380");
+        widget.setAttribute("frameborder", "0");
+        widget.setAttribute("allowtransparency", "true");
+        
+        document.getElementById("content_container").appendChild(widget);
+    }
+});
+
 app.get('/login', function(req, res) {
 
   var state = generateRandomString(16);
